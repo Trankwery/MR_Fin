@@ -45,65 +45,35 @@ end
 %==============My fynctions==============================
 function rad = deg2rad( deg )
 rad = pi*deg/180;
-%==============My fynctions==============================
-
-% --- Executes just before MRfin is made visible.
-function MRfin_OpeningFcn(hObject, eventdata, handles, varargin)
-
-handles.C=1;   % Kontola tego czy ma wykonywac sie kod C, C=1 TAK, C=0 NIE
-
-handles.output = hObject;
-try
+%-----
+function handles = Old_data(handles)
+% Reading data from "base" workspase
     handles.Ipp = evalin('base','Ipp');
     handles.Iss = evalin('base','Iss');
     handles.theta = evalin('base','theta');
+    handles.setup = evalin('base','setup');
+    
     set( handles.edFrame_End,'string', num2str( size( handles.Ipp,1 ) ) );
     set( handles.edFrame_Step,'string', '100' );
-catch
-    s = sprintf('Ipp Iss not found \nin Base Workspace');
-    he = warndlg( s );
-    uiwait( he );
-end
+% Parameters of  the laser beams
+    handles.Wr.wavelength = 654.25;
+    handles.Wr.theta = 0;
+    handles.Wr.polarization = 0;
 
-% if ~handles.C
-%     if (matlabpool('size')~=4 & matlabpool('size')>0)
-%         matlabpool close;
-%         matlabpool 4;
-%     end
-%     if(matlabpool('size')==0)
-%         matlabpool 4;
-%     end
-% end
+    handles.Wg.wavelength = 532.07;
+    handles.Wg.polarization = 1;
+    handles.Wg.theta = pi;
 
-try
-    handles.setup = evalin('base','setup');
-catch
-    s = sprintf('Setup not found \nin Base Workspace')
-    he = warndlg( s );
-    uiwait( he );
-end
-handles.Wr.wavelength = 654.25;
-handles.Wr.theta = 0;
-handles.Wr.polarization = 0;
-
-handles.Wg.wavelength = 532.07;
-handles.Wg.polarization = 1;
-handles.Wg.theta = pi;
-
-
-
-
-
-    handles.Tp = atan( tan( handles.theta.mTp - pi / 2 ) *...
-        str2num( get( handles.edScale,'string' ) ) ) + pi/2 +...
-        deg2rad( str2num( get( handles.edShift_R,'string' ) ) );
-    handles.Ts = atan( tan( handles.theta.mTs - pi / 2 ) *...
-        str2num( get( handles.edScale,'string' ) ) ) + pi/2 +...
-        deg2rad( str2num( get( handles.edShift_G,'string' ) ) );
-    handles.rrp = ( running_radius( abs( handles.Tp - pi/2 ),...
-        handles.setup.hccd_max_R, handles.setup.Diafragma, handles.Wr.wavelength ) ) .^ 2;
-    handles.rrs = ( running_radius(abs(handles.Ts-pi/2),...
-        handles.setup.hccd_max_G, handles.setup.Diafragma, handles.Wg.wavelength ) ).^2;
+handles.Tp = atan( tan( handles.theta.mTp - pi / 2 ) *...
+                   str2num( get( handles.edScale,'string' ) ) ) + pi/2 +...
+                   deg2rad( str2num( get( handles.edShift_R,'string' ) ) );
+handles.Ts = atan( tan( handles.theta.mTs - pi / 2 ) *...
+                   str2num( get( handles.edScale,'string' ) ) ) + pi/2 +...
+                   deg2rad( str2num( get( handles.edShift_G,'string' ) ) );
+handles.rrp = ( running_radius( abs( handles.Tp - pi/2 ),...
+                handles.setup.hccd_max_R, handles.setup.Diafragma, handles.Wr.wavelength ) ) .^ 2;
+handles.rrs = ( running_radius(abs(handles.Ts-pi/2),...
+                handles.setup.hccd_max_G, handles.setup.Diafragma, handles.Wg.wavelength ) ).^2;
 
 handles.mr = Calculate_m(25,handles.Wr.wavelength,'EG');
 handles.mg = Calculate_m(25,handles.Wg.wavelength,'EG');
@@ -112,6 +82,59 @@ handles.ind = 1:100:size( handles.Ipp,1 );
 set(handles.te_m_red,'string',['m_r = ' num2str( handles.mr )]);
 set(handles.te_m_green,'string',['m_g = ' num2str( handles.mg )]);
 set(handles.uipanel1,'title',handles.setup.FileName);
+%-----
+  
+%-----
+%==============End of My fynctions block==============================
+
+% --- Executes just before MRfin is made visible.
+function MRfin_OpeningFcn(hObject, eventdata, handles, varargin)
+
+handles.C = 1;   % Kontola tego czy ma wykonywac sie kod C, C=1 TAK, C=0 NIE
+
+handles.output = hObject;
+
+W = evalin('base','who');
+
+if ( ismember('Ipp', W)*...
+     ismember('Iss', W)*...
+     ismember('setup', W)*...
+     ismember('theta', W) ) == 1 % The old data is detected
+    handles = Old_data(handles);
+elseif ( ismember('I_R',W) ||...
+         ismember('I_G',W) ||...
+         ismember('I_B',W) ) % The new data is detected
+    out = New_Old_Data_Converter;
+   handles.Ipp = out.Ipp;
+   handles.Iss = out.Iss;
+   handles.theta = out.theta;
+   handles.Tp = out.theta.mTp;
+   handles.Ts = out.theta.mTs;
+   % Parameters of  the laser beams
+   handles.Wr = out.Wr;
+   handles.Wg = out.Wg;
+   handles.mr = Calculate_m(25,handles.Wr.wavelength,'EG');
+   handles.mg = Calculate_m(25,handles.Wg.wavelength,'EG');
+   handles.r = 1e3:20:15e3;
+   handles.ind = 1:100:size( handles.Ipp,1 );
+   set(handles.te_m_red,'string',['m_r = ' num2str( handles.mr )]);
+   set(handles.te_m_green,'string',['m_g = ' num2str( handles.mg )]);
+   set( handles.edFrame_End,'string', num2str( size( handles.Ipp,1 ) ) );
+   set( handles.edFrame_Step,'string', '100' );
+   
+   setup.FileName  = 'FN';
+   setup.hccd_max_R = 1;
+   setup.hccd_max_G = 1;
+   setup.Diafragma = 1;
+%    assignin('base','setup',setup)
+handles.setup = setup;
+else
+    s = sprintf('There is no appropriate data in the "base" workspace!');
+    he = warndlg( s );
+    uiwait( he );
+    
+end
+
 if handles.C
     save_workspace;         % KOD C
 end
