@@ -75,7 +75,7 @@ if ismember('I_G',W)
     I_G = evalin('base','I_G');
     set( handles.ed_I_G, 'string', Save.edG);
 else
-    set( handles.ed_I_G, 'string', Save.edG);
+    set( handles.ed_I_G, 'string', '');
     set( handles.ed_I_G, 'enable','off');
     set( handles.rbSetAsIppG ,'enable','off');
     set( handles.rbSetAsIssG ,'enable','off')
