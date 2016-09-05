@@ -105,8 +105,8 @@ elseif ( ismember('I_R',W) ||...
          ismember('I_G',W) ||...
          ismember('I_B',W) ) % The new data is detected
     out = New_Old_Data_Converter;
-   handles.Ipp = out.Ipp;
-   handles.Iss = out.Iss;
+    
+   
    handles.theta = out.theta;
    handles.Tp = out.theta.mTp;
    handles.Ts = out.theta.mTs;
@@ -115,19 +115,34 @@ elseif ( ismember('I_R',W) ||...
    handles.Wg = out.Wg;
    handles.mr = Calculate_m(25,handles.Wr.wavelength,'EG');
    handles.mg = Calculate_m(25,handles.Wg.wavelength,'EG');
-   handles.r = 1e3:20:15e3;
-   handles.ind = 1:100:size( handles.Ipp,1 );
+   
+   
+   
+   handles.setup.FileName  = 'FN';
+   handles.setup.hccd_max_R = 0.0026;
+   handles.setup.hccd_max_G = 0.0027;
+   handles.setup.Diafragma = 0.0098;
+   handles.rrp = ( running_radius( abs( handles.Tp - pi/2 ),...
+                handles.setup.hccd_max_R, handles.setup.Diafragma, handles.Wr.wavelength ) ) .^ 2;
+   handles.rrs = ( running_radius(abs(handles.Ts-pi/2),...
+                handles.setup.hccd_max_G, handles.setup.Diafragma, handles.Wg.wavelength ) ).^2;
+   wb = waitbar(0,'Calculating...');
+   handles.Ipp = zeros(size(out.Ipp));
+   handles.Iss = zeros(size(out.Iss));
+   for in = 1 : size(out.Ipp,1)         
+       waitbar(in/size(out.Ipp,1),wb);
+       handles.Ipp(in,:) = out.Ipp(in,:)./handles.rrp;
+       handles.Iss(in,:) = out.Iss(in,:)./handles.rrs;
+   end
+   close(wb);
    set(handles.te_m_red,'string',['m_r = ' num2str( handles.mr )]);
    set(handles.te_m_green,'string',['m_g = ' num2str( handles.mg )]);
    set( handles.edFrame_End,'string', num2str( size( handles.Ipp,1 ) ) );
    set( handles.edFrame_Step,'string', '100' );
-   
-   setup.FileName  = 'FN';
-   setup.hccd_max_R = 1;
-   setup.hccd_max_G = 1;
-   setup.Diafragma = 1;
+   handles.r = 1e3:20:15e3;
+   handles.ind = 1:100:size( handles.Ipp,1 );
 %    assignin('base','setup',setup)
-handles.setup = setup;
+
 else
     s = sprintf('There is no appropriate data in the "base" workspace!');
     he = warndlg( s );

@@ -135,7 +135,7 @@ theta.mTs =nzTs(ind_reduced_G);
 
 % ------------------------------------------------------------------------
 %
-function [Ip Is ] = FrameWorker(hObject, handles, Frame, sh, Phi, theta,Ind,ivs,ivp);
+function [Ip Is ] = FrameWorker(hObject, handles, Frame, sh, Phi, theta,Ind,ivs,ivp)
 %
 FrR = double( Frame(:,:,1) ); %double( Frame.cdata(:,:,1) );
 sFrR = circshift( FrR,[ sh.shyR sh.shx ] );
