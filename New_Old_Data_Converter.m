@@ -63,7 +63,7 @@ else
     
 end
 if ismember('I_R',W)
-    I_R = evalin('base','I_R'); % Intensity
+%     I_R = evalin('base','I_R'); % Intensity
     set( handles.ed_I_R, 'string', Save.edR); % wavelength
 else
     set( handles.ed_I_R, 'string', ''); % wavelength
@@ -72,7 +72,7 @@ else
     set( handles.rbSetAsIssR ,'enable','off')
 end
 if ismember('I_G',W)
-    I_G = evalin('base','I_G');
+%     I_G = evalin('base','I_G');
     set( handles.ed_I_G, 'string', Save.edG);
 else
     set( handles.ed_I_G, 'string', '');
@@ -81,7 +81,7 @@ else
     set( handles.rbSetAsIssG ,'enable','off')
 end
 if ismember('I_B',W)
-    I_B = evalin('base','I_B');
+%     I_B = evalin('base','I_B');
     set( handles.ed_I_B, 'string', Save.edB);
 else
     set( handles.ed_I_B, 'string', '');
@@ -200,12 +200,12 @@ function rbSetAsIppR_Callback(hObject, eventdata, handles)
      set(handles.rbSetAsIppG,'value',0);
      set(handles.rbSetAsIppB,'value',0);
    % reading data from "base" workspase  
-     handles.theta.mTp = evalin('base','ThetaR')*pi/180 + pi;
      handles.Ipp = evalin('base','I_R');
+     handles.theta.mTp = evalin('base','ThetaR')*pi/180 + pi/2;
    % setting wave structure
      handles.Wr.wavelength = str2double( get(handles.ed_I_R,'string') );
      handles.Wr.theta = 0;
-     handles.Wr.polarization = 1;
+     handles.Wr.polarization = 0;
      
      if get(handles.rbInvAngl_R,'value')
          handles.theta.mTp = handles.theta.mTp(end:-1:1);
@@ -231,15 +231,15 @@ if get(hObject,'value')
      set(handles.edIss,'string',get(handles.ed_I_R,'string'));
      set(handles.rbSetAsIssG,'value',0);
      set(handles.rbSetAsIssB,'value',0)
-     handles.theta.mTs = evalin('base','ThetaR')*pi/180 + pi;
+     handles.theta.mTs = evalin('base','ThetaR')*pi/180 + pi/2;
      handles.Iss = evalin('base','I_R');
      % setting wave structure
      handles.Wg.wavelength = str2double( get(handles.ed_I_R,'string') );
      handles.Wg.theta = 0;
-     handles.Wg.polarization = 0;
+     handles.Wg.polarization = 1;
      
      if get(handles.rbInvAngl_R,'value')
-         handles.theta.mTs = handles.theta.mTs(end:-1:1);
+          handles.theta.mTs = handles.theta.mTs(end:-1:1);
      end
  else
      set(handles.edIss,'string','');
@@ -260,12 +260,12 @@ if get(hObject,'value')
      set(handles.edIpp,'string',get(handles.ed_I_G,'string'));
      set(handles.rbSetAsIppR,'value',0);
      set(handles.rbSetAsIppB,'value',0);
-     handles.theta.mTp = evalin('base','ThetaG')*pi/180 + pi;
+     handles.theta.mTp = evalin('base','ThetaG')*pi/180 + pi/2;
      handles.Ipp = evalin('base','I_G');
      % setting wave structure
      handles.Wr.wavelength = str2double( get(handles.ed_I_G,'string') );
      handles.Wr.theta = 0;
-     handles.Wr.polarization = 1;
+     handles.Wr.polarization = 0;
      
      if get(handles.rbInvAngl_G,'value')
          handles.theta.mTp = handles.theta.mTp(end:-1:1);
@@ -290,11 +290,11 @@ if get(hObject,'value')
      set(handles.rbSetAsIssR,'value',0);
      set(handles.rbSetAsIssB,'value',0);
      handles.Iss = evalin('base','I_G');
-     handles.theta.mTs = evalin('base','ThetaG')*pi/180 + pi;
+     handles.theta.mTs = evalin('base','ThetaG')*pi/180 + pi/2;
      % setting wave structure
      handles.Wg.wavelength = str2double( get(handles.ed_I_G,'string') );
      handles.Wg.theta = 0;
-     handles.Wg.polarization = 0;
+     handles.Wg.polarization = 1;
      
      if get(handles.rbInvAngl_G,'value')
          handles.theta.mTs = handles.theta.mTs(end:-1:1);
@@ -319,11 +319,11 @@ if get(hObject,'value')
      set(handles.rbSetAsIppG,'value',0);
      set(handles.rbSetAsIppR,'value',0);
       handles.Ipp = evalin('base','I_B');
-     handles.theta.mTp = evalin('base','ThetaB')*pi/180 + pi;
+     handles.theta.mTp = evalin('base','ThetaB')*pi/180 + pi/2;
      % setting wave structure
      handles.Wr.wavelength = str2double( get(handles.ed_I_B,'string') );
      handles.Wr.theta = 0;
-     handles.Wr.polarization = 1;
+     handles.Wr.polarization = 0;
      if get(handles.rbInvAngl_B,'value')
          handles.theta.mTp = handles.theta.mTp(end:-1:1);
      end
@@ -348,13 +348,14 @@ if get(hObject,'value')
      set(handles.rbSetAsIssG,'value',0);
      set(handles.rbSetAsIssR,'value',0);
       handles.Iss = evalin('base','I_B');
-      handles.theta.mTs = evalin('base','ThetaB')*pi/180 + pi;
+      handles.theta.mTs = evalin('base','ThetaB')*pi/180 + pi/2;
       % setting wave structure
      handles.Wg.wavelength = str2double( get(handles.ed_I_B,'string') );
      handles.Wg.theta = 0;
      handles.Wg.polarization = 1;
      if get(handles.rbInvAngl_B,'value')
          handles.theta.mTs = handles.theta.mTs(end:-1:1);
+        
      end
  else
      set(handles.edIss,'string','');

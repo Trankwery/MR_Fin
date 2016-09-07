@@ -104,7 +104,15 @@ if ( ismember('Ipp', W)*...
 elseif ( ismember('I_R',W) ||...
          ismember('I_G',W) ||...
          ismember('I_B',W) ) % The new data is detected
-    out = New_Old_Data_Converter;
+     
+     if ismember('IppConv',W)
+         handles.Ipp = evalin('base','IppConv');
+         handles.Iss = evalin('base','IssConv');
+         out = evalin('base','out');
+     else
+         out = New_Old_Data_Converter;
+     end
+    
     
    
    handles.theta = out.theta;
@@ -126,15 +134,31 @@ elseif ( ismember('I_R',W) ||...
                 handles.setup.hccd_max_R, handles.setup.Diafragma, handles.Wr.wavelength ) ) .^ 2;
    handles.rrs = ( running_radius(abs(handles.Ts-pi/2),...
                 handles.setup.hccd_max_G, handles.setup.Diafragma, handles.Wg.wavelength ) ).^2;
-   wb = waitbar(0,'Calculating...');
+            %% temp 
+            indNan = find(isnan(handles.rrp));
+            handles.rrp(indNan) = 1;
+            indNan = find(isnan(handles.rrs));
+            handles.rrs(indNan) = 1;
+            %% end temp
+   
+if ~ismember('IppConv',W)
+    wb = waitbar(0,'Calculating...');
    handles.Ipp = zeros(size(out.Ipp));
    handles.Iss = zeros(size(out.Iss));
+
    for in = 1 : size(out.Ipp,1)         
        waitbar(in/size(out.Ipp,1),wb);
        handles.Ipp(in,:) = out.Ipp(in,:)./handles.rrp;
        handles.Iss(in,:) = out.Iss(in,:)./handles.rrs;
    end
    close(wb);
+   assignin('base','IppConv',handles.Ipp);
+   assignin('base','IssConv',handles.Iss);
+   assignin('base','theta',handles.theta );
+   assignin('base','setup',handles.setup );
+   assignin('base','out',out );
+end
+
    set(handles.te_m_red,'string',['m_r = ' num2str( handles.mr )]);
    set(handles.te_m_green,'string',['m_g = ' num2str( handles.mg )]);
    set( handles.edFrame_End,'string', num2str( size( handles.Ipp,1 ) ) );
@@ -216,6 +240,9 @@ function edRmax_Callback(hObject, eventdata, handles)
 handles.r = str2num( get( handles.edRmin,'string' ) ):...
     str2num( get( handles.edRstep,'string' ) ):...
     str2num( get( handles.edRmax,'string' ) );
+if handles.C
+    save_workspace;         % KOD C
+end
 guidata(hObject, handles);
 
 % --- Executes during object creation, after setting all properties.
@@ -485,7 +512,7 @@ end
 hf =  figure;
 axes;
 if get(handles.cbRed,'value')
-    plot( res.rr ,'r.', 'MarkerSize', 5 );
+    plot( res.rr ,'r.', 'MarkerSize', 7 );
     grid on;
 end
 %=================== fitt preview ====================================
@@ -502,7 +529,7 @@ end
 if get(handles.cbGreen,'value')
     figure( hf );
     hold on;
-    plot( res.rg, 'g.', 'MarkerSize', 5);
+    plot( res.rg, 'g.', 'MarkerSize', 7);
     grid on;
 end
 s = sprintf(['Scale = %s \n'...
