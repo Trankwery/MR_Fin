@@ -201,14 +201,17 @@ function rbSetAsIppR_Callback(hObject, eventdata, handles)
      set(handles.rbSetAsIppB,'value',0);
    % reading data from "base" workspase  
      handles.Ipp = evalin('base','I_R');
-     handles.theta.mTp = evalin('base','ThetaR')*pi/180 + pi/2;
+    
    % setting wave structure
      handles.Wr.wavelength = str2double( get(handles.ed_I_R,'string') );
      handles.Wr.theta = 0;
      handles.Wr.polarization = 0;
      
      if get(handles.rbInvAngl_R,'value')
-         handles.theta.mTp = handles.theta.mTp(end:-1:1);
+%          handles.theta.mTp = handles.theta.mTp(end:-1:1);
+           handles.theta.mTp = -evalin('base','ThetaR')*pi/180 + pi/2;
+     else
+          handles.theta.mTp = evalin('base','ThetaR')*pi/180 + pi/2;
      end
  else
      set(handles.edIpp,'string','');
@@ -231,7 +234,7 @@ if get(hObject,'value')
      set(handles.edIss,'string',get(handles.ed_I_R,'string'));
      set(handles.rbSetAsIssG,'value',0);
      set(handles.rbSetAsIssB,'value',0)
-     handles.theta.mTs = evalin('base','ThetaR')*pi/180 + pi/2;
+     
      handles.Iss = evalin('base','I_R');
      % setting wave structure
      handles.Wg.wavelength = str2double( get(handles.ed_I_R,'string') );
@@ -239,7 +242,10 @@ if get(hObject,'value')
      handles.Wg.polarization = 1;
      
      if get(handles.rbInvAngl_R,'value')
-          handles.theta.mTs = handles.theta.mTs(end:-1:1);
+%           handles.theta.mTs = handles.theta.mTs(end:-1:1);
+          handles.theta.mTs = -evalin('base','ThetaR')*pi/180 + pi/2;
+     else
+         handles.theta.mTs = evalin('base','ThetaR')*pi/180 + pi/2;
      end
  else
      set(handles.edIss,'string','');
@@ -260,7 +266,7 @@ if get(hObject,'value')
      set(handles.edIpp,'string',get(handles.ed_I_G,'string'));
      set(handles.rbSetAsIppR,'value',0);
      set(handles.rbSetAsIppB,'value',0);
-     handles.theta.mTp = evalin('base','ThetaG')*pi/180 + pi/2;
+     
      handles.Ipp = evalin('base','I_G');
      % setting wave structure
      handles.Wr.wavelength = str2double( get(handles.ed_I_G,'string') );
@@ -268,7 +274,9 @@ if get(hObject,'value')
      handles.Wr.polarization = 0;
      
      if get(handles.rbInvAngl_G,'value')
-         handles.theta.mTp = handles.theta.mTp(end:-1:1);
+         handles.theta.mTp = -evalin('base','ThetaG')*pi/180 + pi/2;
+     else
+         handles.theta.mTp = evalin('base','ThetaG')*pi/180 + pi/2;
      end
  else
      set(handles.edIpp,'string','');
@@ -290,14 +298,16 @@ if get(hObject,'value')
      set(handles.rbSetAsIssR,'value',0);
      set(handles.rbSetAsIssB,'value',0);
      handles.Iss = evalin('base','I_G');
-     handles.theta.mTs = evalin('base','ThetaG')*pi/180 + pi/2;
+     
      % setting wave structure
      handles.Wg.wavelength = str2double( get(handles.ed_I_G,'string') );
      handles.Wg.theta = 0;
      handles.Wg.polarization = 1;
      
      if get(handles.rbInvAngl_G,'value')
-         handles.theta.mTs = handles.theta.mTs(end:-1:1);
+         handles.theta.mTs = -evalin('base','ThetaG')*pi/180 + pi/2;
+     else
+         handles.theta.mTs = evalin('base','ThetaG')*pi/180 + pi/2;
      end
  else
      set(handles.edIss,'string','');
@@ -319,13 +329,15 @@ if get(hObject,'value')
      set(handles.rbSetAsIppG,'value',0);
      set(handles.rbSetAsIppR,'value',0);
       handles.Ipp = evalin('base','I_B');
-     handles.theta.mTp = evalin('base','ThetaB')*pi/180 + pi/2;
+     
      % setting wave structure
      handles.Wr.wavelength = str2double( get(handles.ed_I_B,'string') );
      handles.Wr.theta = 0;
      handles.Wr.polarization = 0;
      if get(handles.rbInvAngl_B,'value')
-         handles.theta.mTp = handles.theta.mTp(end:-1:1);
+         handles.theta.mTp = -evalin('base','ThetaB')*pi/180 + pi/2;
+     else
+         handles.theta.mTp = evalin('base','ThetaB')*pi/180 + pi/2;
      end
      
  else
@@ -354,7 +366,9 @@ if get(hObject,'value')
      handles.Wg.theta = 0;
      handles.Wg.polarization = 1;
      if get(handles.rbInvAngl_B,'value')
-         handles.theta.mTs = handles.theta.mTs(end:-1:1);
+         handles.theta.mTs = -evalin('base','ThetaB')*pi/180 + pi/2;
+     else
+          handles.theta.mTs = evalin('base','ThetaB')*pi/180 + pi/2;
         
      end
  else

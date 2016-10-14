@@ -89,6 +89,6 @@ x_max = max(r) * 2 * pi / min(waves.wavelength);
 
 % Calculating angle-dependent functions
 nmax = ceil(x_max + 4 * x_max.^0.33333333 + 2);
-[P T]=Mie_pt_vector_mex_C(cos(theta),int32(nmax));
+[P T]=Mie_pt_vector_mex_C(double(cos(theta)),int32(nmax)); % make sure theta is double
 
 I = GeneratePatternPT(r, m, P, T, waves, pattern_length, noise);

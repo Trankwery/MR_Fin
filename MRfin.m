@@ -75,8 +75,8 @@ handles.rrp = ( running_radius( abs( handles.Tp - pi/2 ),...
 handles.rrs = ( running_radius(abs(handles.Ts-pi/2),...
                 handles.setup.hccd_max_G, handles.setup.Diafragma, handles.Wg.wavelength ) ).^2;
 
-handles.mr = Calculate_m(25,handles.Wr.wavelength,'EG');
-handles.mg = Calculate_m(25,handles.Wg.wavelength,'EG');
+handles.mr = Calculate_m(23,handles.Wr.wavelength,'EG');
+handles.mg = Calculate_m(23,handles.Wg.wavelength,'EG');
 handles.r = 1e3:20:15e3;
 handles.ind = 1:100:size( handles.Ipp,1 );
 set(handles.te_m_red,'string',['m_r = ' num2str( handles.mr )]);
@@ -121,8 +121,8 @@ elseif ( ismember('I_R',W) ||...
    % Parameters of  the laser beams
    handles.Wr = out.Wr;
    handles.Wg = out.Wg;
-   handles.mr = Calculate_m(25,handles.Wr.wavelength,'EG');
-   handles.mg = Calculate_m(25,handles.Wg.wavelength,'EG');
+   handles.mr = Calculate_m(23,handles.Wr.wavelength,'EG');
+   handles.mg = Calculate_m(23,handles.Wg.wavelength,'EG');
    
    
    
@@ -136,9 +136,9 @@ elseif ( ismember('I_R',W) ||...
                 handles.setup.hccd_max_G, handles.setup.Diafragma, handles.Wg.wavelength ) ).^2;
             %% temp 
             indNan = find(isnan(handles.rrp));
-            handles.rrp(indNan) = 1;
+            handles.rrp(indNan) = (handles.rrp(indNan-1)+handles.rrp(indNan+1))/2;
             indNan = find(isnan(handles.rrs));
-            handles.rrs(indNan) = 1;
+            handles.rrs(indNan) = (handles.rrs(indNan-1)+handles.rrs(indNan+1))/2;
             %% end temp
    
 if ~ismember('IppConv',W)
@@ -204,9 +204,9 @@ function pmRefInd_Callback(hObject, eventdata, handles)
 % Calculate refractive index
 S = get( handles.pmRefInd,'String' );
 Vel = get( handles.pmRefInd,'Value' );
-handles.mr = Calculate_m( 25, handles.Wr.wavelength, S{Vel} ) +...
+handles.mr = Calculate_m( 23, handles.Wr.wavelength, S{Vel} ) +...
     str2num( get( handles.edShift_m, 'string' ) ) + str2num( get( handles.edShift_mred, 'string' ) );
-handles.mg = Calculate_m( 25, handles.Wg.wavelength, S{Vel} ) +...
+handles.mg = Calculate_m( 23, handles.Wg.wavelength, S{Vel} ) +...
     str2num( get( handles.edShift_m, 'string' ) );
 set( handles.te_m_red,'string',['m_r = ' num2str(handles.mr)]);
 set( handles.te_m_green,'string',['m_g = ' num2str(handles.mg)]);
@@ -327,9 +327,9 @@ end
 function edShift_m_Callback(hObject, eventdata, handles)
 S = get( handles.pmRefInd,'String' );
 Vel = get( handles.pmRefInd,'Value' );
-handles.mr = Calculate_m( 25, handles.Wr.wavelength, S{Vel} ) +...
+handles.mr = Calculate_m( 23, handles.Wr.wavelength, S{Vel} ) +...
     str2num( get( handles.edShift_m, 'string' ) ) + str2num( get( handles.edShift_mred, 'string' ) );
-handles.mg = Calculate_m( 25, handles.Wg.wavelength, S{Vel} ) +...
+handles.mg = Calculate_m( 23, handles.Wg.wavelength, S{Vel} ) +...
     str2num( get( handles.edShift_m, 'string' ) );
 
 set( handles.te_m_red,'string',sprintf('m_r = %2.4f ',  handles.mr ));
@@ -348,7 +348,7 @@ end
 function edShift_mred_Callback(hObject, eventdata, handles)
 S = get( handles.pmRefInd,'String' );
 Vel = get( handles.pmRefInd,'Value' );
-handles.mr = Calculate_m( 25, handles.Wr.wavelength, S{Vel} ) +...
+handles.mr = Calculate_m( 23, handles.Wr.wavelength, S{Vel} ) +...
     str2num( get( handles.edShift_m, 'string' ) ) + str2num( get( handles.edShift_mred, 'string' ) );
 set( handles.te_m_red,'string',sprintf('m_r = %2.4f ',  handles.mr ));
 guidata(hObject, handles);
@@ -420,6 +420,7 @@ function pbCalc_Callback(hObject, eventdata, handles)
 % ======= Calc ==========================
 
 if handles.C
+
     save_setup; %KOD DO C
     TT=tic;
     [status,result] = system('./client .socket','-echo'); %KOD DO C
@@ -598,9 +599,9 @@ set(handles.uipanel1,'title',handles.setup.FileName);
 S = get( handles.pmRefInd,'String' );
 Vel = get( handles.pmRefInd,'Value' );
 
-handles.mr = Calculate_m( 25, handles.Wr.wavelength, S{Vel} ) +...
+handles.mr = Calculate_m( 23, handles.Wr.wavelength, S{Vel} ) +...
     str2num( get( handles.edShift_m, 'string' ) ) + str2num( get( handles.edShift_mred, 'string' ) );
-handles.mg = Calculate_m( 25, handles.Wg.wavelength, S{Vel} ) +...
+handles.mg = Calculate_m( 23, handles.Wg.wavelength, S{Vel} ) +...
     str2num( get( handles.edShift_m, 'string' ) );
 
 
@@ -647,16 +648,16 @@ figure;
 [AX,H1,H2] = plotyy(handles.Tp,handles.Ipp(1,:),handles.Ts,handles.Iss(1,:));
 grid on;
 title('First frame.');
-set(H1,'color','r');
-set(H2,'color','g');
+set(H1,'color','b');
+set(H2,'color','r');
 % set(AX(1),'color','r');
 % set(AX(2),'color','g');
 figure;
 [AX,H1,H2] = plotyy(handles.Tp,handles.Ipp(end,:),handles.Ts,handles.Iss(end,:));
 grid on;
 title('Last frame.');
-set(H1,'color','r');
-set(H2,'color','g');
+set(H1,'color','b');
+set(H2,'color','r');
 
 % --- Executes on button press in cbRed.
 function cbRed_Callback(hObject, eventdata, handles)
